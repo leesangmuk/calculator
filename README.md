@@ -1,4 +1,4 @@
-<html lang="ko">
+<html lang="ko" translate="no">
 <head>
   <meta charset="UTF-8">
   <title>건강 계산기</title>
