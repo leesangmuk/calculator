@@ -1,7 +1,7 @@
 <html lang="ko" translate="no">
 <head>
   <meta charset="UTF-8">
-  <title>건강 계산기</title>
+  <title>계산기</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2em; }
     .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -89,6 +89,7 @@
   <div class="tab-buttons">
     <button class="tab-btn active" onclick="switchTab(event, 'vat')">부가세계산기</button>
     <button class="tab-btn" onclick="switchTab(event, 'bmi')">학생 비만도 계산기</button>
+    <button class="tab-btn" onclick="switchTab(event, 'bloodtype')">혈액형 확률 계산기</button>
   </div>
 
   <div class="tab-section active" id="tab-vat">
@@ -274,5 +275,80 @@ BMI: ${bmi} → `;
     document.getElementById("bloodCheckBox").style.display = "none";
   }
 </script>
+
+<!-- 혈액형 확률 계산기 섹션 -->
+<div class="tab-section" id="tab-bloodtype">
+  <div class="bmi-form-container">
+    <h1>혈액형 확률 계산기</h1>
+    <label>아버지 혈액형:
+      <select id="father">
+        <option value="A">A형</option>
+        <option value="B">B형</option>
+        <option value="AB">AB형</option>
+        <option value="O">O형</option>
+      </select>
+    </label>
+    <label>어머니 혈액형:
+      <select id="mother">
+        <option value="A">A형</option>
+        <option value="B">B형</option>
+        <option value="AB">AB형</option>
+        <option value="O">O형</option>
+      </select>
+    </label>
+    <div class="button-group">
+      <button onclick="calcBloodType()">계산하기</button>
+      <button onclick="resetBloodForm()">다시하기</button>
+    </div>
+    <div class="result" id="bloodResult"></div>
+  </div>
+</div>
+
+<script>
+function calcBloodType() {
+  const father = document.getElementById("father").value;
+  const mother = document.getElementById("mother").value;
+  const result = document.getElementById("bloodResult");
+
+  const combinations = {
+    'AA': {A: 75, O: 25}, 'AO': {A: 50, O: 50},
+    'BB': {B: 75, O: 25}, 'BO': {B: 50, O: 50},
+    'AB': {A: 25, B: 25, AB: 50}, 'OO': {O: 100},
+    'A+B': {A: 25, B: 25, AB: 25, O: 25},
+    'A+AB': {A: 25, B: 25, AB: 50},
+    'A+O': {A: 50, O: 50},
+    'B+AB': {A: 25, B: 25, AB: 50},
+    'B+O': {B: 50, O: 50},
+    'AB+O': {A: 50, B: 50},
+    'AB+AB': {A: 25, B: 25, AB: 50},
+    'O+O': {O: 100},
+    'A+A': {A: 75, O: 25},
+    'B+B': {B: 75, O: 25},
+    'A+B': {A: 25, B: 25, AB: 25, O: 25}
+  };
+
+  const key1 = `${father}+${mother}`;
+  const key2 = `${mother}+${father}`;
+  const output = combinations[key1] || combinations[key2];
+
+  if (!output) {
+    result.innerText = "조합을 찾을 수 없습니다.";
+    return;
+  }
+
+  let text = "자녀의 혈액형 가능성:\n";
+  for (const [type, percent] of Object.entries(output)) {
+    text += `- ${type}형: ${percent}%\n`;
+  }
+  result.innerText = text;
+}
+
+function resetBloodForm() {
+  document.getElementById("father").value = "A";
+  document.getElementById("mother").value = "A";
+  document.getElementById("bloodResult").innerText = "";
+}
+</script>
+
 </body>
 </html>
